@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SK Bank</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        header {
+            background: #0078D4;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            position: relative;
+        }
+
+        .logout-btn {
+            position: absolute;
+            right: 20px;
+            top: 12px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .container {
+            width: 900px;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            background: #eaeaea;
+        }
+
+        .tab.active {
+            background: #0078D4;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #0078D4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #0078D4;
+            color: white;
+        }
+
+        #actionMsg {
+            margin-top: 10px;
+            font-weight: bold;
+            color: green;
+        }
+
+        #loginCard {
+            width: 300px;
+            margin: 80px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    🏦 SK Bank
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+
+<!-- LOGIN -->
+<div id="loginCard" class="card">
+    <h2>🔐 Login</h2>
+
+    <input id="username" placeholder="Username"/><br/>
+    <input id="password" type="password" placeholder="Password"/><br/>
+
+    <button onclick="login()">Login</button>
+
+    <p id="loginError" style="color:red;"></p>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
+    <div class="container">
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('dashboard', this)">Dashboard</div>
+            <div class="tab" onclick="showTab('actions', this)">Deposit / Withdraw</div>
+            <div class="tab" onclick="showTab('statements', this)">Statements</div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="card">
+            <h2>Account Balance</h2>
+            <h1><span id="balance">0</span></h1>
+        </div>
+
+        <!-- Actions -->
+        <div id="actions" class="card" style="display:none;">
+            <h2>Transaction</h2>
+
+            <input id="amount" type="number" placeholder="Amount (CAD)" />
+            <input id="message" placeholder="Reason (e.g., Grocery, Salary)" />
+
+            <br/>
+
+            <button onclick="deposit()">Deposit</button>
+            <button onclick="withdraw()">Withdraw</button>
+
+            <p id="actionMsg"></p>
+        </div>
+
+        <!-- Statements -->
+        <div id="statements" class="card" style="display:none;">
+            <h2>Transaction Statements</h2>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Date Time</th>
+                    <th>Message</th>
+                    <th>Deposit</th>
+                    <th>Withdraw</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody id="table"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    function showTab(tabName, el) {
+        document.getElementById("dashboard").style.display = "none";
+        document.getElementById("actions").style.display = "none";
+        document.getElementById("statements").style.display = "none";
+
+        document.getElementById(tabName).style.display = "block";
+
+        let tabs = document.getElementsByClassName("tab");
+        for (let t of tabs) t.classList.remove("active");
+
+        el.classList.add("active");
+    }
+
+    function formatCAD(amount) {
+        return new Intl.NumberFormat('en-CA', {
+            style: 'currency',
+            currency: 'CAD'
+        }).format(amount);
+    }
+
+    function load() {
+        fetch('/api/balance')
+            .then(r => r.json())
+            .then(d => document.getElementById("balance").innerText = formatCAD(d));
+
+        fetch('/api/transactions')
+            .then(r => r.json())
+            .then(data => {
+                let html = '';
+                data.slice().reverse().forEach(t => {
+                    html += `<tr>
+                        <td>${t.dateTime}</td>
+                        <td>${t.message}</td>
+                        <td>${formatCAD(t.deposit)}</td>
+                        <td>${formatCAD(t.withdraw)}</td>
+                        <td>${formatCAD(t.total)}</td>
+                    </tr>`;
+                });
+                document.getElementById("table").innerHTML = html;
+            });
+    }
+
+    function deposit() {
+        let amount = parseFloat(document.getElementById("amount").value);
+        let message = document.getElementById("message").value;
+
+        if (!amount || amount <= 0) {
+            alert("Enter valid deposit amount");
+            return;
+        }
+
+        fetch(`/api/deposit?amount=${amount}&message=${message}`, {method:"POST"})
+            .then(() => {
+                showMessage("✅ Deposit successful");
+                load();
+            });
+    }
+
+    function withdraw() {
+        let amount = parseFloat(document.getElementById("amount").value);
+        let message = document.getElementById("message").value;
+
+        if (!amount || amount <= 0) {
+            alert("Enter valid withdraw amount");
+            return;
+        }
+
+        fetch(`/api/withdraw?amount=${amount}&message=${message}`, {method:"POST"})
+            .then(() => {
+                showMessage("✅ Withdrawal successful");
+                load();
+            });
+    }
+
+    function showMessage(msg) {
+        const el = document.getElementById("actionMsg");
+        el.innerText = msg;
+
+        setTimeout(() => {
+            el.innerText = "";
+        }, 3000);
+    }
+
+    function login() {
+        let u = document.getElementById("username").value;
+        let p = document.getElementById("password").value;
+
+        fetch(`/auth/login?username=${u}&password=${p}`, {method:"POST"})
+            .then(r => r.text())
+            .then(res => {
+                if (res === "SUCCESS") {
+                    document.getElementById("loginCard").style.display = "none";
+                    document.getElementById("app").style.display = "block";
+                    load();
+                } else {
+                    document.getElementById("loginError").innerText = "Invalid credentials";
+                }
+            });
+    }
+
+    function logout() {
+        document.getElementById("app").style.display = "none";
+        document.getElementById("loginCard").style.display = "block";
+
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("actionMsg").innerText = "";
+    }
+
+</script>
+
+</body>
+</html>
