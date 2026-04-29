@@ -1,50 +1,79 @@
-# 🏦 Azure Banking Backend (Spring Boot + Azure Cloud)
+# 🎥 Demo – Azure Banking App
 
-## 🚀 Project Summary
-Designed and deployed a **cloud-native banking backend system** using **Java (Spring Boot)** on **Microsoft Azure App Service**.  
-This project demonstrates hands-on experience in **cloud deployment, REST API development, and production debugging**.
+## 🚀 Overview
+This project demonstrates a **cloud-based banking backend system** built using Java and deployed on Microsoft Azure.  
+It includes a simple UI to simulate real-world banking operations.
 
 ---
 
-## 🌐 Live Application
-- **Base URL:**  
-  https://santobank.azurewebsites.net
+## ✨ Features Demonstrated
 
-- **Sample Endpoint:**
-  GET /hello
+- 🔐 Login (admin/admin – prototype)
+- 📊 Dashboard showing real-time balance
+- 💰 Deposit functionality with validation
+- 💸 Withdraw functionality with validation
+- 📜 Transaction history:
+  - Date & Time
+  - Message (reason)
+  - Deposit / Withdraw
+  - Running total
+- 🔄 Live updates using REST APIs
+- 💵 Currency formatting (CAD)
 
-- **Response:**
-```json
-{
-  "message": "Hello from Azure Banking App 🚀"
-}
+---
 
-🧱 Architecture Overview
+## 🧱 Tech Stack
 
-Client (Browser / Postman)
-        ↓
-Azure App Service (Linux, Java 21 - F1)
-        ↓
-Spring Boot REST API (Embedded Tomcat)
-        ↓
-(Next Phase) Azure SQL Database
+| Layer | Technology |
+|------|-----------|
+| Backend | Java 21, Spring Boot |
+| Frontend | HTML, JavaScript |
+| Cloud | Microsoft Azure App Service |
+| API | REST (JSON) |
+| Storage | JSON (temporary, learning phase) |
 
-⚙️ Tech Stack
+---
 
-| Category       | Technology                         |
-| -------------- | ---------------------------------- |
-| Language       | Java 21                            |
-| Framework      | Spring Boot                        |
-| Cloud Platform | Microsoft Azure                    |
-| Hosting        | Azure App Service (Linux, Java SE) |
-| Build Tool     | Maven                              |
-| API Style      | RESTful APIs (JSON)                |
+## ☁️ Azure Deployment
 
+- Hosted on Azure App Service (Linux, Java SE)
+- Configured custom startup command (`java -jar app.jar`)
+- Deployed using manual upload (Deployment Center)
 
-📊 Project Progress
-| Date       | Milestone      | Description                                      |
-| ---------- | -------------- | ------------------------------------------------ |
-| 2026-04-26 | Cloud Setup    | Configured Azure subscription and resources      |
-| 2026-04-26 | App Deployment | Deployed Spring Boot JAR to Azure App Service    |
-| 2026-04-26 | Debugging      | Resolved runtime, startup, and deployment issues |
-| 2026-04-26 | Live API       | Successfully exposed REST endpoint publicly      |
+---
+
+## 🧠 Key Learnings
+
+- End-to-end cloud deployment using Azure  
+- Debugging runtime and deployment issues  
+- Building REST APIs and connecting UI  
+- Handling user input, validation, and UI feedback  
+- Understanding PaaS (Platform as a Service)  
+
+---
+
+## 🔜 Future Enhancements
+
+- 🗄️ Replace JSON with Azure SQL Database  
+- 📨 Integrate Azure Service Bus for async processing  
+- 🔐 Implement secure authentication (JWT / Azure AD)  
+- 🐳 Containerize application using Docker  
+- ⚙️ Add CI/CD pipeline  
+
+---
+
+## 🏆 Why This Project
+
+This project reflects **hands-on Azure development experience**, combining:
+- Cloud deployment
+- Backend engineering
+- Basic frontend integration
+
+It demonstrates the transition from **learning concepts → building real applications**.
+
+---
+
+## 👨‍💻 Author
+
+**Santhoshkumar Rajendran**  
+Cloud & Backend Developer | Azure | Java | REST APIs
